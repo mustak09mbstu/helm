@@ -1,0 +1,24 @@
+mariadb:
+  enabled: false
+
+externalDatabase:
+  host: 10.96.198.131
+  user: root
+  password: admin
+  database: mydb
+  port: 3306
+
+service: 
+  type: NodePort
+  port: 32020
+
+wordpressUsername: admin
+wordpressPassword: password
+
+
+# Run below command to install wordpress
+
+# helm install my-release \
+#   --set wordpressUsername=admin \
+#   --set wordpressPassword=password \
+#   -f values.yaml oci://registry-1.docker.io/bitnamicharts/wordpress
