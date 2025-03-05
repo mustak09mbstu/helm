@@ -266,4 +266,5 @@ helm status my-app -o json
 helm template -h
 helm template [name] [chart] [flag]
 helm template test1 nginx
+helm template temp . -f values-prod.yaml
 ```
