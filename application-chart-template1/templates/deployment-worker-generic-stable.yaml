@@ -1,0 +1,12 @@
+{{- if hasKey .Values "deploymentWorker"  }}
+{{- $deploymentWorkerGenericStableConfig := .Values.deploymentWorker | default (dict "enabled" false) }}
+{{- if $deploymentWorkerGenericStableConfig.enabled }}
+
+{{- range .Values.deploymentWorker.workerDeploymentDefination }}
+{{- include "common.deployment.worker.generic.stable" (dict "WorkerValues" . "Values" $.Values "Chart" $.Chart "Release" $.Release) | nindent 0 }}
+---
+{{- end }}
+
+
+{{- end }}
+{{- end }}

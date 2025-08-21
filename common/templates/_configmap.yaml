@@ -1,0 +1,75 @@
+
+{{- define "common.configmap-from-file" -}}
+
+{{- if hasKey .Values "cofigmapFromFile"  }}
+{{- $checkValueConfig := .Values.cofigmapFromFile | default (dict "enabled" false) }}
+{{- if $checkValueConfig.enabled }}
+
+{{- $path := printf "config/%v/config.yaml" .Values.env }}
+{{- $configRaw := .Files.Get $path }}
+{{- $configs := fromYaml $configRaw }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-configmap
+  labels:
+  {{- include "ApplicationLabel-stable" . | nindent 4 }}
+data:
+{{- range $key, $value := $configs.data }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
+
+  {{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+---
+{{- define "common.phpfpmconf" -}}
+
+{{- if hasKey .Values "phpfpmconf"  }}
+{{- $checkValueConfig := .Values.phpfpmconf | default (dict "enabled" false) }}
+{{- if $checkValueConfig.enabled }}
+
+# generating php-fpm.conf configmap for mounting in deployment
+{{- $phpfpmfilepath := printf "config/%v/php-fpm.conf" .Values.env }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-cm-phpfpmconf
+  labels:
+  {{- include "ApplicationLabel-stable" . | nindent 4 }}
+data:
+  php-fpm.conf: |
+{{ (.Files.Get $phpfpmfilepath) | nindent 4 }}
+
+  {{- end }}
+{{- end }}
+
+{{- end -}}
+
+---
+
+{{- define "common.nginxconf" -}}
+
+{{- if hasKey .Values "nginxconf"  }}
+{{- $checkValueConfig := .Values.nginxconf | default (dict "enabled" false) }}
+{{- if $checkValueConfig.enabled }}
+
+# generating nginx.conf configmap for mounting in deployment
+{{- $nginxfilepath := printf "config/%v/nginx.conf" .Values.env }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-cm-nginxconf
+  labels:
+  {{- include "ApplicationLabel-stable" . | nindent 4 }}
+data:
+  nginx.conf: |
+{{ (.Files.Get $nginxfilepath) | nindent 4 }}
+
+  {{- end }}
+{{- end }}
+
+{{- end -}}
+

@@ -1,0 +1,9 @@
+{{- include "common.configmap-from-file" . }}
+---
+
+{{- include "common.phpfpmconf" . }}
+
+---
+{{- include "common.nginxconf" . }}
+
+---

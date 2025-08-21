@@ -1,0 +1,243 @@
+{{- define "common.deployment-stable" }}
+
+
+{{- if hasKey .Values "deploymentStable"  }}
+{{- $deploymentStableConfig := .Values.deploymentStable | default (dict "enabled" false) }}
+{{- if $deploymentStableConfig.enabled }}
+
+{{- $filemountname := printf "%s-cm-filemount" .Values.app.name }}
+
+{{- $nfsMountName := printf "%s-nfs-mount" .Values.app.name }}
+{{- $nfsServer := printf "%s" .Values.nfsMount.nfsServer }}
+{{- $nfsFilePath := printf "%s" .Values.nfsMount.nfsPath }}
+{{- $accessMode := printf "%s" .Values.nfsMount.accessMode }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}-deployment
+  annotations:
+    kubernetes.io/change-cause: {{ .Values.stable.image.tag }}
+  labels:
+  {{- include "ApplicationLabel-stable" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.stable.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "applicationServiceLabelSelector" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "applicationServiceLabelSelector" . | nindent 8 }}
+    spec:
+      {{- if and .Values.trafficTopologyDistributionRule.enabled .Values.trafficTopologyDistributionRule.topologySpreadConstraints }}
+      {{- include "application.topologySpreadConstraints" . | nindent 6 }}
+      {{- end }}
+      {{- if and .Values.trafficTopologyDistributionRule.affinity.enabled .Values.trafficTopologyDistributionRule.affinity.nodeAffinity.enabled }}
+        {{- include "application.nodeAffinity" . | nindent 6 }}
+      {{- end }}
+    {{- if .Values.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.nodeSelector.label.key }}: {{ .Values.nodeSelector.label.value }}
+    {{- end }}
+      imagePullSecrets: 
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      volumes:
+      {{- if .Values.vault.vaultsslsecret.enabled }}
+      - name: {{ .Values.app.name }}-ssl-volume
+        secret:
+          defaultMode: 420
+          secretName: {{ .Values.app.name }}-ssl-keys-secrets
+      {{- end }}        
+      {{- if .Values.phpfpmconf.enabled }}
+      - name: {{ .Values.app.name }}-cm-phpfpmconf
+        configMap:
+          name: {{ .Values.app.name }}-cm-phpfpmconf
+      {{- end }}
+      {{- if .Values.nginxconf.enabled }}
+      - name: {{ .Values.app.name }}-cm-nginxconf
+        configMap:
+          name: {{ .Values.app.name }}-cm-nginxconf
+      {{- end }}
+      {{- if .Values.cofigmapFromFile.configmapMount.enabled }}
+      - name: {{ .Values.app.name }}-configmap
+        configMap:
+          name: {{ .Values.app.name }}-configmap
+          defaultMode: {{ .Values.cofigmapFromFile.configmapMount.mode  }}
+      {{- end }}  
+      {{- if .Values.fileMountFromConfigMap.enabled }}
+      - name: {{ $filemountname }}
+        configMap:
+          name: {{ $filemountname }}
+      {{- end }}  
+      {{- if .Values.nfsMount.enabled }}   
+      - name: {{ $nfsMountName }}
+        nfs:
+          server: {{ $nfsServer }}
+          path: {{ $nfsFilePath }}
+          readOnly: {{ $accessMode }}
+      {{- end }}     
+      {{- if .Values.deploymentStable.initContainers.enabled }}
+      initContainers:
+      {{- range .Values.deploymentStable.initContainers.containers }}
+        - name: {{ .name }}
+          image: {{ .image }}
+          command: 
+          {{- range .command}}
+          - {{ quote . }}
+          {{- end}}
+        {{- end}}
+          env:
+            - name: REQUIRED_SECRETS
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.app.name }}-configmap
+                  key: REQUIRED_SECRETS
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.app.name }}-configmap
+            - secretRef:
+                name: {{ .Values.app.name }}-secrets
+      {{- end}}
+      {{- if .Values.hostAliases.enabled }}
+      hostAliases:
+      {{- range .Values.hostAliases.aliases }}
+        - ip: "{{ .ip }}"
+          hostnames:
+          {{- range .hostnames }}
+          - {{ quote . }}     
+          {{- end }}     
+      {{- end }}
+      {{- end }}
+      {{- if .Values.dnsCustomConfig.enabled }}
+      dnsPolicy: {{ .Values.dnsCustomConfig.dnsPolicy | quote }}
+      dnsConfig:
+        nameservers:
+        {{- range .Values.dnsCustomConfig.dnsConfig.nameservers }}
+          - {{ . }}  
+        {{- end }}
+        searches:
+        {{- range .Values.dnsCustomConfig.dnsConfig.searches }}
+          - {{ . }}  
+        {{- end }}    
+        options:
+        {{- range .Values.dnsCustomConfig.dnsConfig.options }}
+          - name: {{ .name }}
+            value: {{ quote .value }}  
+        {{- end }}                
+      {{- end }}
+      containers:
+        - name: {{ .Values.app.name }}
+          image: {{ .Values.stable.image.repository}}:{{ .Values.stable.image.tag }} 
+          imagePullPolicy: {{ .Values.stable.image.pullPolicy }}
+          {{- if .Values.deploymentStable.enabledCommandArgs }}
+          command:
+            {{- if .Values.deploymentStable.commandArgs }}
+              {{- toYaml .Values.deploymentStable.commandArgs | nindent 12 }}
+            {{- end }}
+          {{- end }} 
+          {{- if .Values.deploymentStable.ports.enabled }}
+          ports:
+          {{- range .Values.deploymentStable.ports.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+            {{- end }}
+          {{- end }}            
+          env:  
+          {{- if .Values.deploymentStable.enabledEnv }}  
+            {{- range .Values.deploymentStable.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}                
+            - name: APP_VERSION
+              value: {{ .Values.stable.image.tag }}          
+          envFrom:
+          {{- if .Values.cofigmapFromFile.enabled }}          
+            - configMapRef:
+                name: {{ .Values.app.name }}-configmap
+          {{- end }}      
+            - secretRef:
+                name: {{ .Values.app.name }}-secrets
+          volumeMounts:
+          {{- if .Values.vault.vaultsslsecret.enabled }}
+          - mountPath: {{ .Values.vault.vaultsslsecret.ssl_mount_path }}
+            name: {{ .Values.app.name }}-ssl-volume
+            readOnly: true
+          {{- end }}  
+          {{- if .Values.phpfpmconf.enabled }}
+          - mountPath: /app/opt/php/etc/php-fpm.conf
+            name: {{ .Values.app.name }}-cm-phpfpmconf
+            readOnly: true
+            subPath: php-fpm.conf
+          {{- end }}
+          {{- if .Values.nginxconf.enabled }}
+          - mountPath: /app/opt/nginx/conf/nginx.conf
+            name: {{ .Values.app.name }}-cm-nginxconf
+            readOnly: true
+            subPath: nginx.conf
+          {{- end }}    
+          {{- if .Values.cofigmapFromFile.configmapMount.enabled }}
+          - mountPath: {{ .Values.cofigmapFromFile.configmapMount.mountPath }}/{{ .Values.cofigmapFromFile.configmapMount.subPath }}
+            name: {{ .Values.app.name }}-configmap
+            readOnly: true
+            subPath: {{ .Values.cofigmapFromFile.configmapMount.subPath }}
+          {{- end }}
+          {{- range .Values.deploymentStable.mountConfigMapDeployment.fileMountDefinition }}
+          - mountPath: {{ .mountPath }}
+            name: {{ $filemountname }}
+            readOnly: true
+            subPath: {{ .subPath }}
+          {{- end }}  
+          {{- if .Values.nfsMount.enabled }}
+          - name: {{ $nfsMountName }}
+            mountPath: {{ .Values.nfsMount.containerPath }}
+          {{- end }}             
+          {{- if .Values.deploymentStable.resourceRequirements.enabled }}      
+          resources:
+            limits:
+              cpu: {{ .Values.deploymentStable.resourceRequirements.limits.cpu }}
+              memory: {{ .Values.deploymentStable.resourceRequirements.limits.memory }}
+            requests:
+              cpu: {{ .Values.deploymentStable.resourceRequirements.requests.cpu }}
+              memory: {{ .Values.deploymentStable.resourceRequirements.requests.memory }}
+          {{- end }}    
+
+          # Liveness Probe
+          {{- if .Values.deploymentStable.livenessProbe.enabled }}
+          livenessProbe:
+            {{- if eq .Values.deploymentStable.livenessProbe.type "http" }}
+            httpGet:
+              path: {{ .Values.deploymentStable.livenessProbe.httpGet.path }}
+              port: {{ .Values.deploymentStable.livenessProbe.httpGet.port }}
+            {{- else if eq .Values.deploymentStable.livenessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .Values.deploymentStable.livenessProbe.tcpSocket.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.deploymentStable.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deploymentStable.livenessProbe.periodSeconds }}
+          {{- end }}
+
+          # Readiness Probe
+          {{- if .Values.deploymentStable.readinessProbe.enabled }}
+          readinessProbe:
+            {{- if eq .Values.deploymentStable.readinessProbe.type "http" }}
+            httpGet:
+              path: {{ .Values.deploymentStable.readinessProbe.httpGet.path }}
+              port: {{ .Values.deploymentStable.readinessProbe.httpGet.port }}
+            {{- else if eq .Values.deploymentStable.readinessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .Values.deploymentStable.readinessProbe.tcpSocket.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .Values.deploymentStable.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.deploymentStable.readinessProbe.periodSeconds }}
+          {{- end }}              
+
+  {{- end }}  
+{{- end }}  
+
+{{- end }}  

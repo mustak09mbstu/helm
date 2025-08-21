@@ -1,0 +1,13 @@
+
+{{- if hasKey .Values "cronjobs"  }}
+{{- $cronjobsGenericV2 := .Values.cronjobs | default (dict "enabled" false) }}
+{{- if $cronjobsGenericV2.enabled }}
+
+{{- range .Values.cronjobs.cronjobDefination }}
+{{- include "common.cronjob.cronjobsGeneric" (dict "CronValues" . "Values" $.Values "Chart" $.Chart "Release" $.Release) | nindent 0 }}
+---
+{{- end }}
+
+
+{{- end }}
+{{- end }}

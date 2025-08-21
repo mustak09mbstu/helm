@@ -1,0 +1,13 @@
+
+{{- if hasKey .Values "jobs"  }}
+{{- $jobsGeneric := .Values.jobs | default (dict "enabled" false) }}
+{{- if $jobsGeneric.enabled }}
+
+{{- range .Values.jobs.jobDefination }}
+{{- include "common.job.jobDefination" (dict "JobValues" . "Values" $.Values "Chart" $.Chart "Release" $.Release) | nindent 0 }}
+---
+{{- end }}
+
+
+{{- end }}
+{{- end }}

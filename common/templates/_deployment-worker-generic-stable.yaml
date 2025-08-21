@@ -1,0 +1,211 @@
+{{- /*
+This will generate a template based on the given input for deployment worker
+Maintainer: Arif Hossen
+Change history:
+20241019: Added Generic Deployment Worker Definition
+*/}}
+
+
+{{- define "common.deployment.worker.generic.stable" }}
+
+{{- $filemountname := printf "%s-cm-filemount" .Values.app.name }}
+
+{{- $nfsMountName := printf "%s-nfs-mount" .Values.app.name }}
+{{- $nfsServer := printf "%s" .Values.nfsMount.nfsServer }}
+{{- $nfsFilePath := printf "%s" .Values.nfsMount.nfsPath }}
+{{- $accessMode := printf "%s" .Values.nfsMount.accessMode }}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .WorkerValues.name }}
+  annotations:
+    kubernetes.io/change-cause: {{ .Values.stable.image.tag }}
+  labels:
+  {{- include "applicationLable-worker-stable" . | nindent 4 }}
+    worker: {{ .Values.app.name }}-{{ .WorkerValues.name }}
+    loglabelindex: {{ .WorkerValues.name }}-{{ .Values.env }}
+
+spec:
+  replicas: {{ .WorkerValues.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "applicationWorkerServiceLabelSelector" . | nindent 6 }}
+      worker: {{ .Values.app.name }}-{{ .WorkerValues.name }}
+      loglabelindex: {{ .WorkerValues.name }}-{{ .Values.env }}
+  template:
+    metadata:
+      labels:
+      {{- include "applicationWorkerServiceLabelSelector" . | nindent 8 }}
+        worker: {{ .Values.app.name }}-{{ .WorkerValues.name }}
+        loglabelindex: {{ .WorkerValues.name }}-{{ .Values.env }}
+    spec:
+    {{- if .Values.nodeSelector.enabled }}
+      nodeSelector:
+        {{ .Values.nodeSelector.label.key }}: {{ .Values.nodeSelector.label.value }}
+    {{- end }}
+      imagePullSecrets: 
+      {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      volumes:
+      {{- if .Values.vault.vaultsslsecret.enabled }}
+      - name: {{ .Values.app.name }}-ssl-volume
+        secret:
+          defaultMode: 420
+          secretName: {{ .Values.app.name }}-ssl-keys-secrets
+      {{- end }}    
+      {{- if .Values.phpfpmconf.enabled }}
+      - name: {{ .Values.app.name }}-cm-phpfpmconf
+        configMap:
+          name: {{ .Values.app.name }}-cm-phpfpmconf
+      {{- end }}
+      {{- if .Values.nginxconf.enabled }}
+      - name: {{ .Values.app.name }}-cm-nginxconf
+        configMap:
+          name: {{ .Values.app.name }}-cm-nginxconf
+      {{- end }}  
+      {{- if .Values.fileMountFromConfigMap.enabled }}
+      - name: {{ $filemountname }}
+        configMap:
+          name: {{ $filemountname }}
+      {{- end }}  
+      {{- if .Values.nfsMount.enabled }}   
+      - name: {{ $nfsMountName }}
+        nfs:
+          server: {{ $nfsServer }}
+          path: {{ $nfsFilePath }}
+          readOnly: {{ $accessMode }}
+      {{- end }}   
+      {{- if .Values.hostAliases.enabled }}
+      hostAliases:
+      {{- range .Values.hostAliases.aliases }}
+        - ip: "{{ .ip }}"
+          hostnames:
+          {{- range .hostnames }}
+          - {{ quote . }}     
+          {{- end }}     
+      {{- end }}
+      {{- end }}
+      {{- if .Values.dnsCustomConfig.enabled }}
+      dnsPolicy: {{ .Values.dnsCustomConfig.dnsPolicy | quote }}
+      dnsConfig:
+        nameservers:
+        {{- range .Values.dnsCustomConfig.dnsConfig.nameservers }}
+          - {{ . }}  
+        {{- end }}
+        searches:
+        {{- range .Values.dnsCustomConfig.dnsConfig.searches }}
+          - {{ . }}  
+        {{- end }}    
+        options:
+        {{- range .Values.dnsCustomConfig.dnsConfig.options }}
+          - name: {{ .name }}
+            value: {{ quote .value }}  
+        {{- end }}                
+      {{- end }}           
+      containers:
+        - name: {{ .WorkerValues.name }}
+          image: {{ .Values.stable.image.repository}}:{{ .Values.stable.image.tag }} 
+          imagePullPolicy: {{ .Values.stable.image.pullPolicy }}
+          {{- if .WorkerValues.enabledCommandArgs }}
+          command:
+            {{- if .WorkerValues.commandArgs }}
+              {{- toYaml .WorkerValues.commandArgs | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- if .WorkerValues.ports.enabled }}
+          ports:
+          {{- range .WorkerValues.ports.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+            {{- end }}
+          {{- end }} 
+          env:  
+          {{- if .WorkerValues.enabledEnv }}  
+            {{- range .WorkerValues.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}                
+            - name: APP_VERSION
+              value: {{ .Values.stable.image.tag }}
+          envFrom:
+            {{- if .Values.cofigmapFromFile.enabled }}
+            - configMapRef:
+                name: {{ .Values.app.name }}-configmap
+            {{- end }}    
+            - secretRef:
+                name: {{ .Values.app.name }}-secrets
+          volumeMounts:
+          {{- if .Values.vault.vaultsslsecret.enabled }}
+          - mountPath: {{ .Values.vault.vaultsslsecret.ssl_mount_path }}
+            name: {{ .Values.app.name }}-ssl-volume
+            readOnly: true
+          {{- end }}  
+          {{- if .Values.phpfpmconf.enabled }}
+          - mountPath: /app/opt/php/etc/php-fpm.conf
+            name: {{ .Values.app.name }}-cm-phpfpmconf
+            readOnly: true
+            subPath: php-fpm.conf
+          {{- end }}
+          {{- if .Values.nginxconf.enabled }}
+          - mountPath: /app/opt/nginx/conf/nginx.conf
+            name: {{ .Values.app.name }}-cm-nginxconf
+            readOnly: true
+            subPath: nginx.conf
+          {{- end }}     
+          {{- if .WorkerValues.mountConfigMapDeployment.enabled }}
+            {{- range .WorkerValues.mountConfigMapDeployment.fileMountDefinition }}
+          - mountPath: {{ .mountPath }}
+            name: {{ $filemountname }}
+            readOnly: true
+            subPath: {{ .subPath }}
+            {{- end }}
+          {{- end }}   
+          {{- if .Values.nfsMount.enabled }}
+          - name: {{ $nfsMountName }}
+            mountPath: {{ .Values.nfsMount.containerPath }}
+          {{- end }}                  
+          {{- if .WorkerValues.resourceRequirements.enabled }}      
+          resources:
+            limits:
+              cpu: {{ .WorkerValues.resourceRequirements.limits.cpu }}
+              memory: {{ .WorkerValues.resourceRequirements.limits.memory }}
+            requests:
+              cpu: {{ .WorkerValues.resourceRequirements.requests.cpu }}
+              memory: {{ .WorkerValues.resourceRequirements.requests.memory }}
+          {{- end }}              
+
+          # Liveness Probe
+          {{- if .WorkerValues.livenessProbe.enabled }}
+          livenessProbe:
+            {{- if eq .WorkerValues.livenessProbe.type "http" }}
+            httpGet:
+              path: {{ .WorkerValues.livenessProbe.httpGet.path }}
+              port: {{ .WorkerValues.livenessProbe.httpGet.port }}
+            {{- else if eq .WorkerValues.livenessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .WorkerValues.livenessProbe.tcpSocket.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .WorkerValues.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .WorkerValues.livenessProbe.periodSeconds }}
+          {{- end }}
+
+          # Readiness Probe
+          {{- if .WorkerValues.readinessProbe.enabled }}
+          readinessProbe:
+            {{- if eq .WorkerValues.readinessProbe.type "http" }}
+            httpGet:
+              path: {{ .WorkerValues.readinessProbe.httpGet.path }}
+              port: {{ .WorkerValues.readinessProbe.httpGet.port }}
+            {{- else if eq .WorkerValues.readinessProbe.type "tcp" }}
+            tcpSocket:
+              port: {{ .WorkerValues.readinessProbe.tcpSocket.port }}
+            {{- end }}
+            initialDelaySeconds: {{ .WorkerValues.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .WorkerValues.readinessProbe.periodSeconds }}
+          {{- end }}              
+
+
+{{- end }}  

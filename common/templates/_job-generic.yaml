@@ -1,0 +1,164 @@
+{{- /*
+This will generate a template based on the given input for a job
+Maintainer: Arif Hossen
+Change history:
+20241023: Added Generic Job Definition
+*/}}
+
+
+{{- define "common.job.jobDefination" }}
+
+{{- $nfsMountName := printf "%s-nfs-mount" .Values.app.name }}
+{{- $nfsServer := printf "%s" .Values.nfsMount.nfsServer }}
+{{- $nfsFilePath := printf "%s" .Values.nfsMount.nfsPath }}
+{{- $accessMode := printf "%s" .Values.nfsMount.accessMode }}
+
+{{- if hasKey .Values "jobs" }}
+  {{- $cronjobsConfig := .Values.jobs | default (dict "enabled" false) }}
+  {{- if $cronjobsConfig.enabled }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .JobValues.name }}
+  annotations:
+    kubernetes.io/change-cause: {{ .Values.stable.image.tag }}
+  labels:
+    {{- include "ApplicationLabel-stable" . | nindent 4 }}
+spec:
+  completions: {{ .JobValues.completions }}
+  backoffLimit: {{ .JobValues.backoffLimit }}
+  template:
+    spec:
+      imagePullSecrets: 
+        {{- range .Values.imagePullSecrets }}
+        - name: {{ . }}
+        {{- end }}
+      volumes:
+      {{- if .Values.vault.vaultsslsecret.enabled }}
+      - name: {{ .Values.app.name }}-ssl-volume
+        secret:
+          defaultMode: 420
+          secretName: {{ .Values.app.name }}-ssl-keys-secrets
+      {{- end }}          
+    {{- if .JobValues.mountPhpfpmconf }}          
+      {{- if .Values.phpfpmconf.enabled }}
+      - name: {{ .Values.app.name }}-cm-phpfpmconf
+        configMap:
+          name: {{ .Values.app.name }}-cm-phpfpmconf
+      {{- end }}
+    {{- end }}        
+    {{- if .JobValues.mountNginxconf }}
+      {{- if .Values.nginxconf.enabled }}
+      - name: {{ .Values.app.name }}-cm-nginxconf
+        configMap:
+          name: {{ .Values.app.name }}-cm-nginxconf
+      {{- end }}   
+    {{- end }}  
+      {{- if .Values.nfsMount.enabled }}   
+      - name: {{ $nfsMountName }}
+        nfs:
+          server: {{ $nfsServer }}
+          path: {{ $nfsFilePath }}
+          readOnly: {{ $accessMode }}
+      {{- end }}
+      {{- if .Values.hostAliases.enabled }}
+      hostAliases:
+      {{- range .Values.hostAliases.aliases }}
+        - ip: "{{ .ip }}"
+          hostnames:
+          {{- range .hostnames }}
+          - {{ quote . }}     
+          {{- end }}     
+      {{- end }}
+      {{- end }}
+      {{- if .Values.dnsCustomConfig.enabled }}
+      dnsPolicy: {{ .Values.dnsCustomConfig.dnsPolicy | quote }}
+      dnsConfig:
+        nameservers:
+        {{- range .Values.dnsCustomConfig.dnsConfig.nameservers }}
+          - {{ . }}  
+        {{- end }}
+        searches:
+        {{- range .Values.dnsCustomConfig.dnsConfig.searches }}
+          - {{ . }}  
+        {{- end }}    
+        options:
+        {{- range .Values.dnsCustomConfig.dnsConfig.options }}
+          - name: {{ .name }}
+            value: {{ quote .value }}  
+        {{- end }}                
+      {{- end }}                     
+      containers:
+        - name: {{ .JobValues.name }}
+          image: {{ .Values.stable.image.repository }}:{{ .Values.stable.image.tag }}
+          {{- if .JobValues.enabledCommandArgs }}
+          command:
+              {{- toYaml .JobValues.commandArgs | nindent 16 }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.vault.vaultsslsecret.enabled }}
+          - mountPath: {{ .Values.vault.vaultsslsecret.ssl_mount_path }}
+            name: {{ .Values.app.name }}-ssl-volume
+            readOnly: true
+          {{- end }}                    
+          {{- if eq .JobValues.jobAppType "phpworkerapp" }}                
+          {{- if .Values.phpfpmconf.enabled }}
+          - mountPath: /app/opt/php/etc/php-fpm.conf
+            name: {{ .Values.app.name }}-cm-phpfpmconf
+            readOnly: true
+            subPath: php-fpm.conf
+            {{- end }}
+          {{- end }}                       
+          {{- if .Values.nginxconf.enabled }}
+          - mountPath: /app/opt/nginx/conf/nginx.conf
+            name: {{ .Values.app.name }}-cm-nginxconf
+            readOnly: true
+            subPath: nginx.conf
+          {{- end }}   
+          {{- if .Values.nfsMount.enabled }}
+          - name: {{ $nfsMountName }}
+            mountPath: {{ .Values.nfsMount.containerPath }}
+          {{- end }}                     
+          imagePullPolicy: {{ .Values.stable.image.pullPolicy }}
+          {{- if .JobValues.ports.enabled }}
+          ports:
+          {{- range .JobValues.ports.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .containerPort }}
+            {{- end }}
+          {{- end }}               
+          env:
+          {{- if .JobValues.enabledEnv }}
+            {{- range .JobValues.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          {{- end }}          
+            - name: APP_VERSION
+              value: {{ .Values.stable.image.tag }}                        
+          envFrom:
+            {{- if .Values.cofigmapFromFile.enabled }}
+            - configMapRef:
+                name: {{ .Values.app.name }}-configmap
+            {{- end }}    
+            - secretRef:
+                name: {{ .Values.app.name }}-secrets
+          {{- if .JobValues.resourceRequirements.enabled }}      
+          resources:
+            limits:
+              cpu: {{ .JobValues.resourceRequirements.limits.cpu }}
+              memory: {{ .JobValues.resourceRequirements.limits.memory }}
+            requests:
+              cpu: {{ .JobValues.resourceRequirements.requests.cpu }}
+              memory: {{ .JobValues.resourceRequirements.requests.memory }}
+          {{- end }}              
+
+      restartPolicy: {{ .JobValues.restartPolicy }} 
+
+
+
+  {{- end }}    
+{{- end }}  
+
+{{- end }}  

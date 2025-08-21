@@ -1,0 +1,2 @@
+{{- include "common.secret-ssl-keys-from-file" . }}
+---

@@ -1,0 +1,25 @@
+# define template for secret config from file
+{{- define "common.secret-ssl-keys-from-file" }}
+
+
+{{- if hasKey .Values "sslSecretConfgFromFile"  }}
+{{- $sslsecretConfig := .Values.sslSecretConfgFromFile | default (dict "enabled" false) }}
+  {{- if $sslsecretConfig.enabled }}
+
+{{- $path := printf "config/%v/ssl-config.yaml" .Values.env }}
+{{- $secretsRaw := .Files.Get $path }}
+{{- $secrets := fromYaml $secretsRaw }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Values.app.name }}-ssl-keys-secrets
+type: Opaque
+data:
+{{- range $key, $value := $secrets.data }}
+  {{ $key }}: {{ $value | quote }}
+{{- end }}
+
+  {{- end }}
+{{- end }}
+
+{{- end }}

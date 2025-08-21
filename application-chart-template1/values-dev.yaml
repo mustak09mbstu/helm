@@ -1,0 +1,569 @@
+# Default values for helm based application chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+app:
+  name: xxxxxxxxxx
+
+# env will be either - dev/uat/stage/preprod/prod depends on the deployment target
+env: dev
+
+# this value is in vault config section, it's help to have to namespace variable in value file
+#  it's also control from argo manifest, so not require here
+# namespace: paywall-dev
+
+# version of parent lib chart that map to a label in application chart for tracing
+commonLibChartVersion: 0.1.26    # reference to common library chart version
+
+# image for stable (deployment/worker/cronjob/job)
+stable:
+  enabled: true
+  image:
+    repository: mybl-registry.banglalink.net:443/paywall-core/main/dev
+    tag: v.1.0.71
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+  replicaCount: 1
+
+# related to canary deployment, not live yet, plan to have it in future
+canary:
+  enabled: false
+  image:
+    repository: mybl-registry.banglalink.net:443/paywall-core/main/dev
+    tag: v.1.0.72
+    pullPolicy: IfNotPresent
+  replicaCount: 0
+
+# pull secret to pull image mybl registry
+imagePullSecrets:
+  - dpe-registry
+
+# Additional Label if require any for your application
+extraLabel:
+  enabled: false
+  labels:
+    extra1: value1
+    extra2: value2
+
+# deployment definition with a env `type` key
+deploymentStable:
+  enabled: true
+  enabledCommandArgs: true
+  commandArgs:
+    - sh
+    - /app/usr/local/bin/entrypoint.sh
+  enabledEnv: true
+  env:
+    - name: OFFSET
+      value: "0"
+    - name: TERMINATING_LIMIT
+      value: "4000000"   
+  ports:
+    enabled: true
+    ports:
+    - name: http
+      containerPort: 8443 
+  mountConfigMapDeployment:
+    enabled: true
+    fileMountDefinition:
+      - mountPath: /app/abc
+        subPath: file1.txt
+      - mountPath: /app/abcd
+        subPath: file2.txt
+  resourceRequirements:    
+    enabled: true    
+    limits:
+      cpu: 1
+      memory: 512Mi
+    requests:
+      cpu: 512m
+      memory: 256Mi           
+  livenessProbe:
+    enabled: true
+    type: http # options: http, tcp
+    httpGet:
+      path: /healthz
+      port: 8443
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readinessProbe:
+    enabled: true
+    type: tcp # options: http, tcp
+    tcpSocket:
+      port: 8443
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  initContainers:
+    enabled: true 
+    containers:
+    - name: init-sample
+      image: busybox:1.28
+      command: 
+        - "sh" 
+        - '-c'
+        - "exec file name"
+
+
+# # yet to develop
+# initContainers:
+#   enabled: false  # Set to false to disable the init container
+#   containers:
+#     - name: init-sample
+#       image: busybox:1.28
+#       command: ["sh", "-c"]
+#       args: ["echo Init container running... && sleep 5"]
+#       resources:
+#         limits:
+#           cpu: "100m"
+#           memory: "128Mi"
+#         requests:
+#           cpu: "50m"
+#           memory: "64Mi"
+
+
+
+# deployment-work definition
+deploymentWorker:
+  enabled: true
+  workerDeploymentDefination:
+    - name: deployment1-beat
+      # image: nginx:1.19       # not consider image option yet
+      replicaCount: 1
+      mountPhpfpmconf: true
+      mountNginxconf: false 
+      enabledCommandArgs: true
+      commandArgs:
+        - sh
+        - /app/usr/local/bin/entrypoint.sh
+        - worker
+        - generate:toffee-contents      
+      enabledEnv: true
+      env:
+        - name: OFFSET
+          value: "0"
+        - name: TERMINATING_LIMIT
+          value: "4000000"   
+        - name: TERMINATING_LIMIT4
+          value: "4000000"
+      ports:
+        enabled: true
+        ports:
+        - name: http
+          containerPort: 8443   
+      mountConfigMapDeployment:
+        enabled: true
+        fileMountDefinition:
+          - mountPath: /app/abc
+            subPath: file1.txt
+          - mountPath: /app/abcd
+            subPath: file2.txt
+      resourceRequirements:    
+        enabled: true    
+        limits:
+          cpu: 1
+          memory: 512Mi
+        requests:
+          cpu: 512m
+          memory: 256Mi              
+      livenessProbe:
+        enabled: true
+        type: http # options: http, tcp
+        httpGet:
+          path: /healthz
+          port: 8443
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      readinessProbe:
+        enabled: true
+        type: tcp # options: http, tcp
+        tcpSocket:
+          port: 8443
+        initialDelaySeconds: 5
+        periodSeconds: 10                    
+    - name: deployment2-fix
+      # image: nginx:1.20       # not consider image option yet
+      replicaCount: 0
+      mountPhpfpmconf: true
+      mountNginxconf: false 
+      enabledCommandArgs: false 
+      enabledEnv: true
+      env:
+        - name: OFFSET
+          value: "0"
+        - name: TERMINATING_LIMIT
+          value: "4000000"   
+        - name: TERMINATING_LIMIT4
+          value: "4000000"       
+      ports:
+        enabled: true
+        ports:
+        - name: http
+          containerPort: 8443     
+      mountConfigMapDeployment:
+        enabled: false      
+      resourceRequirements:    
+        enabled: true    
+        limits:
+          cpu: 100m
+          memory: 212Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi               
+      livenessProbe:
+        enabled: false            
+      readinessProbe:
+        enabled: false
+
+
+# if there is any job
+jobs:
+  enabled: true
+  jobDefination:
+    - name: phpjob1 
+      mountPhpfpmconf: true
+      mountNginxconf: true 
+      enabledCommandArgs: true
+      commandArgs:
+        - sh
+        - /app/usr/local/bin/entrypoint.sh
+        - worker
+        - generate:toffee-contents
+      backoffLimit: 1
+      completions: 1
+      restartPolicy: Never
+      enabledEnv: true
+      env:
+        - name: OFFSET
+          value: "0"
+        - name: TERMINATING_LIMIT
+          value: "4000000"   
+        - name: TERMINATING_LIMIT4
+          value: "4000000"      
+      ports:
+        enabled: true
+        ports:
+        - name: http
+          containerPort: 8443           
+      resourceRequirements:    
+        enabled: true    
+        limits:
+          cpu: 1
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 128Mi                        
+    - name: nodejob2
+      backoffLimit: 2
+      completions: 1  
+      restartPolicy: Never
+      mountPhpfpmconf: true
+      mountNginxconf: true       
+      enabledCommandArgs: false
+      enabledEnv: false
+      env:
+        - name: OFFSET
+          value: "2"
+        - name: TERMINATING_LIMIT
+          value: "8000000"      
+      ports:
+        enabled: true
+        ports:
+        - name: http
+          containerPort: 8443           
+      resourceRequirements:    
+        enabled: true    
+        limits:
+          cpu: 1
+          memory: 512Mi
+        requests:
+          cpu: 50m
+          memory: 256Mi      
+
+# if there any cronjob
+cronjobs:
+  enabled: true
+  cronjobDefination:
+    - name: phpjob1  
+      schedule: "0 * * * *"
+      enabledCommandArgs: true
+      commandArgs:
+        - sh
+        - /app/usr/local/bin/entrypoint.sh
+        - worker
+        - generate:toffee-contents
+      backoffLimit: 1
+      successfulJobsHistoryLimit: 2
+      failedJobsHistoryLimit: 5
+      restartPolicy: Never
+      mountPhpfpmconf: true
+      mountNginxconf: true      
+      enabledEnv: false      
+      # env:
+      #   - name: OFFSET
+      #     value: "2"      
+      ports:
+        enabled: true
+        ports:
+        - name: http
+          containerPort: 8443       
+      resourceRequirements:    
+        enabled: true    
+        limits:
+          cpu: 1
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi            
+    - name: nodejob2
+      schedule: "0 * * * *"
+      backoffLimit: 2
+      successfulJobsHistoryLimit: 2
+      failedJobsHistoryLimit: 1  
+      restartPolicy: Never
+      mountPhpfpmconf: true
+      mountNginxconf: true      
+      enabledCommandArgs: false
+      enabledEnv: true      
+      env:
+        - name: OFFSET
+          value: "2"
+        - name: TERMINATING_LIMIT
+          value: "8000000"      
+      ports:
+        enabled: true
+        ports:
+        - name: http
+          containerPort: 8443             
+      resourceRequirements:    
+        enabled: true    
+        limits:
+          cpu: 1
+          memory: 512Mi
+        requests:
+          cpu: 150m
+          memory: 256Mi      
+
+
+# if you need to map a php-fpm.config in deployment/cronjob
+phpfpmconf:
+  enabled: true
+
+# for nginx.conf during deployment
+nginxconf:
+  enabled: true
+
+# config and secret from file, secretConfgFromFile and sslSecretConfgFromFile will disable soon
+# only vault secret will be allowed
+# secretConfgFromFile:
+#   enabled: false
+# sslSecretConfgFromFile:
+#   enabled: false
+cofigmapFromFile:
+  enabled: true
+  configmapMount: 
+    enabled: false
+    mountPath: /config
+    subPath: config.toml
+    mode: 420
+    # items:
+    #   - key: config.toml
+    #     path: config.toml
+    #   - key: config2.toml
+    #     path: config2.toml    
+  # configmap2Env: 
+  #   enabled: true    
+
+fileMountFromConfigMap:
+  enabled: true
+  filedef:
+  - name: file1.txt
+  - name: file2.txt
+
+nfsMount:
+  enabled: true
+  nfsServer: 172.18.14.41
+  nfsPath: /mybl_share_dpedev01/folder
+  containerPath: /tmp/folder
+  accessMode: "true" #make false for read-write
+
+# limits:
+#   cpu: 1
+#   memory: 512Mi
+# requests:
+#   cpu: 512m
+#   memory: 256Mi
+
+# container:
+#   enabled: true
+#   port: 8443
+
+hostAliases:
+  enabled: true
+  aliases:
+    - ip: "172.16.11.10"
+      hostnames:
+      - "apigateway.bangallink.net"
+      - "apigatewayxxxx.bangallink.net"
+      - "apigatewayyyyy.bangallink.net"
+    - ip: "172.16.11.100"
+      hostnames:
+      - "apigateway1.bangallink.net" 
+      - "apigateway2.bangallink.net" 
+
+dnsCustomConfig:
+  enabled: true
+  dnsPolicy: "None"
+  dnsConfig:
+    nameservers:
+      - 10.98.0.10
+      - 10.98.0.11
+    searches:
+      - svc.cluster.local
+      - ns.svc.cluster.local
+      - cluster.local
+    options:
+      - name: ndots
+        value: "2"
+      - name: single-request-reopen
+
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 8443
+
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations:
+    {}
+  hosts:
+    - host: dev-payment.paywall.plus
+      paths:
+        - path: /api
+          pathType: Prefix
+          service:
+            name: paywall-core-svc
+            port: 80
+        - path: /
+          pathType: Prefix
+          service:
+            name: paywall-fe-svc
+            port: 80
+
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+
+# vault config for static and ssl certificate
+vault:
+  enabled: true
+  vaultsecret:
+    enabled: true
+    secretPath: paywall-dev/paywall-core/secret-config  # require to change as per deployment
+    refreshAfter: 180s
+  vaultsslsecret:
+    enabled: true
+    secretPath: paywall-dev/paywall-core/ssl-secret-config
+    refreshAfter: 180s
+    ssl_mount_path: "/app/mybl/www/config/ssl"
+
+
+# node Selector label for application
+nodeSelector:
+  enabled: false
+  label:
+    node.kubernetes.io/traffic-zone: paywall
+
+
+# traffic distribution rule
+trafficTopologyDistributionRule:
+  enabled: true
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: "topology.kubernetes.io/zone"
+    whenUnsatisfiable: DoNotSchedule
+    nodeAffinityPolicy: Honor
+    nodeTaintsPolicy: Ignore
+    # labelSelector:
+      # matchLabels:
+        # app: my-nginx
+    matchLabelKeys:
+      - pod-template-hash      
+  # - maxSkew: 1
+  #   topologyKey: "topology.kubernetes.io/hostname"
+  #   whenUnsatisfiable: DoNotSchedule          
+  affinity:
+    enabled: true
+    nodeAffinity:
+      enabled: true
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: "topology.kubernetes.io/zone"
+            operator: In
+            values:
+            - rndtroubleshoot   
+            - paywall       
+          # - key: "topology.kubernetes.io/hostname"
+          #   operator: In
+          #   values:
+          #   - worker2   
+
+################################################
+
+# Under development 
+# Istio Gateway, experimental config, not for deployment yet
+istio:
+  enabled: false
+  gateway:
+    hosts:
+      - "my-app.example.com"
+      - "banglalink.net"
+      - "*"
+    port: 80
+    protocol: HTTP
+    gatewayName: paywall-core-gateway   # map to ${app.name}-gateway
+    istioGatewaySelectorLabel: ingressgateway
+
+  virtualService:
+    hosts:
+      - "paywall-core.banglalink.net"
+    http:
+      routes:
+        - destination:
+            host: paywall-core-svc    # service name
+            subset: stable
+            weight: 100  # 90% traffic to v1
+        - destination:
+            host: paywall-core-svc    # service name
+            subset: canary
+            weight: 0  # 10% traffic to v2
+  destinationRule:
+    subsets:
+      - name: stable
+        labels:
+          smversion: paywall-core-stable
+      - name: canary
+        labels:
+          smversion: paywall-core-canary
+
+
+# v1 (stable) and v2 (canary).
+# Real Gateway <-> Istio Gateway <-> VirtualServide <-> DestinationRule (label match service)
+
+
+# plan to add security context in future
+securityContext:
+  enabled: false
+  fsGroup: 5001
+  runAsUser: 5001
+
+
+# init container
+# multiple ports option in deployment/worker/job/cronjob
+# 

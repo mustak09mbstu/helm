@@ -1,0 +1,819 @@
+apiVersion: v1
+entries:
+  common:
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker\n- 0.1.21: Add nfs mount in deployment stable\n- 0.1.22:
+        Add file mount and nfs mount in both deployment stable and worker\n- 0.1.23:
+        NFS Mount issue fix\n- 0.1.24: NFS Mount worker issue fix\n- 0.1.25: NFS Mount
+        added in cronjob and job\n- 0.1.26: Host allias and custom dns configuration
+        part added in the deployment, deployment worker, job and cronjob"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.581371477+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 12b2424a27ba1bf359664784ecf7e9be8a90977531b403e6283bedc3f74b2127
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.26.tgz
+    version: 0.1.26
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker\n- 0.1.21: Add nfs mount in deployment stable\n- 0.1.22:
+        Add file mount and nfs mount in both deployment stable and worker\n- 0.1.23:
+        NFS Mount issue fix\n- 0.1.24: NFS Mount worker issue fix\n- 0.1.25: NFS Mount
+        for cron job and job\n"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.580352731+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: f7df74bca0c817092dbf1e26ac9f8a6a6a724f94c9fb3f15ae2a66fb0dbb08f0
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.25.tgz
+    version: 0.1.25
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker\n- 0.1.21: Add nfs mount in deployment stable\n- 0.1.22:
+        Add file mount and nfs mount in both deployment stable and worker\n- 0.1.23:
+        NFS Mount issue fix\n- 0.1.24: NFS Mount worker issue fix\n"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.579640624+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 0323c9f3d6b0245db562392e0b42b814dc835f6046c02c0aee80b49bc1ecc9b7
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.24.tgz
+    version: 0.1.24
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker\n- 0.1.21: Add nfs mount in deployment stable\n- 0.1.22:
+        Add file mount and nfs mount in both deployment stable and worker\n- 0.1.23:
+        NFS Mount issue fix"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.578611748+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: db0f19e93905f7c1284987656f9ea7eb9ad16a64e518ed781ce48fe77ff22784
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.23.tgz
+    version: 0.1.23
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker\n- 0.1.21: Add nfs mount in deployment stable\n- 0.1.22:
+        Add file mount and nfs mount in both deployment stable and worker"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.577691293+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: cb6639b951a3db5864558b1d5dc84e91d72e1114c0a77a53ec093fbfc3f99502
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.22.tgz
+    version: 0.1.22
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker\n- 0.1.21: Add nfs mount in deployment stable"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.57702843+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 17cddf3859579c4d2fa60bd58cd9aff9e63819c807c8f0dca4e3186a4ac04aac
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.21.tgz
+    version: 0.1.21
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker\n- 0.1.20: Add nfs mount in
+        deployment worker"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.576365889+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 287f0158d6f7b68fe6cb94d465028372c09f66d64d69198dd801dfd47301107b
+    maintainers:
+    - email: dpengineering@banglalink.net
+      name: digital platform engineering team
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.20.tgz
+    version: 0.1.20
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob\n- 0.1.19:
+        Add option to mount file in deployment worker"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.575477706+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 763edd0ee4a8e3fb65832b8f65ac51762f539d0c2b632c315d8d6bfc8dd912b6
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.19.tgz
+    version: 0.1.19
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution\n- 0.1.18: Update restartPolicy for cronjob"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.575083397+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 4b87afb2a0dd0fa3b0eec9838ffed44aea537f3bfd3c7240ecd935fb983fbd3e
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.18.tgz
+    version: 0.1.18
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  \n- 0.1.17: Add topologySpreadConstraints and nodeAffinity
+        for traffic distribution"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.574702115+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 6f567a1a1bc23abbf3b1e0a1853a8b238bc2a0fb2640cb4a176885a2f4efda49
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.17.tgz
+    version: 0.1.17
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job
+        \n- 0.1.16: Add ssl mount options for job & cronjob, added option to mount
+        a configmap with a key  "
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.574247769+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 1f3e0e0598c89539061c84dadacfb450d880425d786e7322c05b88ca8ca57b62
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.16.tgz
+    version: 0.1.16
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob)
+        \n- 0.1.15: Add Initcontainer to verify secrets with a config filed and move
+        port definiton to respective section of deployment/depoloyment work/cronjob/job "
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.573598286+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 6db6e8b44f7991ca054b1ab6734e2ec9cf40aaddd66998ca8b84318b7d18b3fe
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.15.tgz
+    version: 0.1.15
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file\n- 0.1.14: Add Resource Requirement
+        in individual configuration part (deployment/worker deployment/corn/cronjob) "
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.572577174+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 03526d9507f2c757653a55b956ad117eb5a48b8b7ab6680876963ba0ef50521f
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.14.tgz
+    version: 0.1.14
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob\n- 0.1.13:
+        Add option to disable port from value file"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.572157445+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 4073b8a3ee1cf76e06f9012cd693d3817b121c47c7a6c12780e1eaa9e806b890
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.13.tgz
+    version: 0.1.13
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker\n- 0.1.12:
+        Added missing loglabelindex for pod: loglabelindex: {{ .Values.app.name }}-{{
+        .Values.env }} \\\n          Correct Env mapping for job and cronjob"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.571776593+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 427176bbee3e61a6f4b81f452ebd45ad7a43166086c9b07f6951802272070a99
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.12.tgz
+    version: 0.1.12
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION\n- 0.1.11: Correct Replicas for Deployment Worker"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.571367332+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: e3dc29a6285877731f29dfcb98807f4fe099b9555a3eab6ea24620566e08ade3
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.11.tgz
+    version: 0.1.11
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add add env as sequence for job, cronjob,
+        deploymentwork and deployment; add command options for job, cronjob, deploymentwork
+        and deployment; add one extra label workerdeployment; remove few old config
+        template\n- 0.1.10: Add livenessProbe and readinessProbe, add new env with
+        name APP_VERSION"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.570990318+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: b950e4b766b4d6fdf9d176865aa516e4c0ffc3b278a26e49300302f858dd5192
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.10.tgz
+    version: 0.1.10
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file\n- 0.1.9: Add"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.58370974+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: e8bd27fe72b4e40472ca6e889c2f2494e5f704a04a8b110ebb17eb29d8a15c2a
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.9.tgz
+    version: 0.1.9
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob\n- 0.1.8: Add Job Definition, Add Service,
+        Add Extra Label, Correct continer name for job and worker, add deployment
+        extra env from value file"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.583295087+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 2941b010bfb9dee8af00c48d3b35757c5972f4ae8ee824b7ff38b4404be1bd4d
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.8.tgz
+    version: 0.1.8
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence \n- 0.1.7: Add/Update name
+        for Deployment Worker and Coronjob"
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.582942361+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 3b6a5c036fb8740d59b7b3c3d645199f0c4ca038c29b39dd56e53e6a588ce531
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.7.tgz
+    version: 0.1.7
+  - annotations:
+      change-history: "- 0.1.0: Initial release of common chart.\n- 0.1.1: Added generic
+        cronjob, additional cronjob template for ryze and added extend label information\n-
+        0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf
+        \\\n          Update Generic Cronjob Template config for successfulJobsHistoryLimit
+        and failedJobsHistoryLimit\n- 0.1.3: Add options to include Generic Worker
+        Deployment with a Env Type and Value\n- 0.1.4: Add Default Conditon check
+        for parameters value that don't exist in value file - vault, ingress, hpa,
+        configmap\n- 0.1.5: Add condition for ssl in deployment\n- 0.1.6: Add option
+        for cronjob in vaule file as an array/sequence "
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.582619648+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 218593fe97d2efd1174f8d738f4f869bce56e822814d400bb6f00ba498e72a4e
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.6.tgz
+    version: 0.1.6
+  - annotations:
+      change-history: |-
+        - 0.1.0: Initial release of common chart.
+        - 0.1.1: Added generic cronjob, additional cronjob template for ryze and added extend label information
+        - 0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf \
+                  Update Generic Cronjob Template config for successfulJobsHistoryLimit and failedJobsHistoryLimit
+        - 0.1.3: Add options to include Generic Worker Deployment with a Env Type and Value
+        - 0.1.4: Add Default Conditon check for parameters value that don't exist in value file - vault, ingress, hpa, configmap
+        - 0.1.5: Add condition for ssl in deployment
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.582299272+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 4af280755f1a153d456187c5fefa88f7e9b6b5a44ab7668f2614066683759642
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.5.tgz
+    version: 0.1.5
+  - annotations:
+      change-history: |-
+        - 0.1.0: Initial release of common chart.
+        - 0.1.1: Added generic cronjob, additional cronjob template for ryze and added extend label information
+        - 0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf \
+                  Update Generic Cronjob Template config for successfulJobsHistoryLimit and failedJobsHistoryLimit
+        - 0.1.3: Add options to include Generic Worker Deployment with a Env Type and Value
+        - 0.1.4: Add Default Conditon check for parameters value that don't exist in value file - vault, ingress, hpa, configmap
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.581998944+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 71cc6665ca3b3ed034981f6b72e572b804f0f3fdb3de83af650bdd33017a0c58
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.4.tgz
+    version: 0.1.4
+  - annotations:
+      change-history: |-
+        - 0.1.0: Initial release of common chart.
+        - 0.1.1: Added generic cronjob, additional cronjob template for ryze and added extend label information
+        - 0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf \
+                  Update Generic Cronjob Template config for successfulJobsHistoryLimit and failedJobsHistoryLimit
+        - 0.1.3: Add options to include Generic Worker Deployment with a Env Type and Value
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.581689184+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 8997dd67a11e1a3167e0b891ea5f7b914c8d7115013cb16aea31f7f6fe06ee49
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.3.tgz
+    version: 0.1.3
+  - annotations:
+      change-history: |-
+        - 0.1.0: Initial release of common chart.
+        - 0.1.1: Added generic cronjob, additional cronjob template for ryze and added extend label information
+        - 0.1.2: Add mount options in Generic CronJob for php-fpm.conf & nginx.conf \
+                  Update Generic Cronjob Template config for successfulJobsHistoryLimit and failedJobsHistoryLimit
+    apiVersion: v2
+    created: "2025-04-17T17:02:37.57572184+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 945cc45948ce037071e5627d3d4555e9233e64f42c62bd775c2b3d4490279bf9
+    maintainers:
+    - email: info.arif@gmail.com
+      name: Arif Hossen
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    created: "2025-04-17T17:02:37.569957676+06:00"
+    description: A Helm common chart for Kubernetes, DPE, Banglalink
+    digest: 988437dc00e37d8d4e66f49446104e86073a73a5ea86fc08d11f081ed4675243
+    name: common
+    type: library
+    urls:
+    - https://digital-gitlab.banglalink.net/helm/helm-charts/-/raw/main/common-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-04-17T17:02:37.569011665+06:00"

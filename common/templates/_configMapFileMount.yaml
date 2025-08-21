@@ -1,0 +1,31 @@
+⁠{{- define "common.configmap.filemount.v3" }}
+
+
+{{- if hasKey .Values "fileMountFromConfigMap" }}
+{{- $configmap := .Values.fileMountFromConfigMap | default (dict "enabled" false) }}
+{{- if $configmap.enabled }}
+
+{{- $env := .Values.env }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.app.name }}-cm-filemount
+  annotations:
+    kubernetes.io/change-cause: "{{ .Values.stable.image.tag }}"
+  labels:
+    {{- include "ApplicationLabel-stable" . | nindent 4 }}
+data:
+{{- range $index, $file := $configmap.filedef }}
+  {{ $file.name }}: |
+{{- if $.Files.Get (printf "config/%s/%s" $env $file.name) }}
+    {{ $.Files.Get (printf "config/%s/%s" $env $file.name) | nindent 4 }}
+{{- else }}
+    # File not found: config/{{ $env }}/{{ $file.name }}
+{{- end }}
+{{- end }}
+
+{{- end }}
+{{- end }}
+
+{{- end }}

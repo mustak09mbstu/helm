@@ -1,0 +1,95 @@
+{{- define "common.cronjob-cronjobsGeneric" }}
+
+{{- if hasKey .Values "cronjobsGeneric" }}
+  {{- $cronjobsConfig := .Values.cronjobsGeneric | default (dict "enabled" false) }}
+  {{- if $cronjobsConfig.enabled }}
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.app.name }}
+  annotations:
+    kubernetes.io/change-cause: {{ .Values.stable.image.tag }}
+  labels:
+    {{- include "ApplicationLabel-stable" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjobsGeneric.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.cronjobsGeneric.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobsGeneric.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      backoffLimit: {{ .Values.cronjobsGeneric.backoffLimit }}
+      template:
+        metadata:
+          labels:
+            {{- include "ApplicationLabel-stable" . | nindent 12 }}
+        spec:
+          imagePullSecrets: 
+            {{- range .Values.imagePullSecrets }}
+            - name: {{ . }}
+            {{- end }}
+          volumes:
+      {{- if .Values.cronjobsGeneric.enabled }}
+        {{- if eq .Values.cronjobsGeneric.cronAppType "phpworkerapp" }}          
+          {{- if .Values.phpfpmconf.enabled }}
+          - name: {{ .Values.app.name }}-cm-phpfpmconf
+            configMap:
+              name: {{ .Values.app.name }}-cm-phpfpmconf
+          {{- end }}
+        {{- end }}
+      {{- end }}          
+          {{- if .Values.nginxconf.enabled }}
+          - name: {{ .Values.app.name }}-cm-nginxconf
+            configMap:
+              name: {{ .Values.app.name }}-cm-nginxconf
+          {{- end }}              
+          containers:
+            - name: {{ .Values.app.name }}
+              image: {{ .Values.stable.image.repository }}:{{ .Values.stable.image.tag }}
+              {{- if .Values.cronjobsGeneric.enabled }}
+                {{- if eq .Values.cronjobsGeneric.cronAppType "phpworkerapp" }}
+              command:
+                {{- if .Values.cronjobsGeneric.commandArgs }}
+                  {{- toYaml .Values.cronjobsGeneric.commandArgs | nindent 16 }}
+                {{- end }}
+                
+                {{- end }}
+              {{- end }}
+              volumeMounts:
+      {{- if .Values.cronjobsGeneric.enabled }}
+        {{- if eq .Values.cronjobsGeneric.cronAppType "phpworkerapp" }}                
+              {{- if .Values.phpfpmconf.enabled }}
+              - mountPath: /app/opt/php/etc/php-fpm.conf
+                name: {{ .Values.app.name }}-cm-phpfpmconf
+                readOnly: true
+                subPath: php-fpm.conf
+              {{- end }}
+        {{- end }}
+      {{- end }}                        
+              {{- if .Values.nginxconf.enabled }}
+              - mountPath: /app/opt/nginx/conf/nginx.conf
+                name: {{ .Values.app.name }}-cm-nginxconf
+                readOnly: true
+                subPath: nginx.conf
+              {{- end }}                        
+              imagePullPolicy: {{ .Values.stable.image.pullPolicy }}
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.app.name }}-configmap
+                - secretRef:
+                    name: {{ .Values.app.name }}-secrets
+              resources:
+                limits:
+                  cpu: {{ .Values.limits.cpu }}
+                  memory: {{ .Values.limits.memory }}
+                requests:
+                  cpu: {{ .Values.requests.cpu }}
+                  memory: {{ .Values.requests.memory }}
+          restartPolicy: OnFailure  # Ensure that the pod doesn't restart automatically
+
+
+
+  {{- end }}    
+{{- end }}  
+
+{{- end }}  

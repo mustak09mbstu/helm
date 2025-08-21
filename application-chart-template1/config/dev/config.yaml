@@ -1,0 +1,17 @@
+data:
+  config.toml: |
+    [cache]
+    REDIS_HOST="172.22.36.7"
+    REDIS_PORT="6381"
+    REDIS_DATABASE="0"
+    REDIS_KEY_PREFIX="iam:prod:sign"
+    VALIDATED_TOKEN_TTL="10m"
+    INVALIDATED_TOKEN_TTL="1h"
+
+    [jwk]
+    JWKS_URI="http://bl-iam-service-svc/iam/v1/auth/jwks"
+    REFRESH_INTERVAL="15m"
+  config1.toml: |
+    [cache]
+    REDIS_HOST="172.22.36.7"
+  AWS_DEFAULT_REGION: us-east-1

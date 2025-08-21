@@ -1,0 +1,9 @@
+{{- if hasKey .Values "fileMountFromConfigMap"  }}
+{{- $fileMount := .Values.fileMountFromConfigMap | default (dict "enabled" false) }}
+{{- if $fileMount.enabled }}
+
+{{- include "common.configmap.filemount.v3" . }}
+---
+
+{{- end }}
+{{- end }}

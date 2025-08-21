@@ -1,0 +1,63 @@
+{{- define "common.cronjob-ryzeRefundProcessor" }}
+
+{{- if hasKey .Values "cronjobs" }}
+  {{- if hasKey .Values.cronjobs "ryzeRefundProcessor" }}
+  {{- $cronjobsConfig := .Values.cronjobs.ryzeRefundProcessor | default (dict "enabled" false) }}
+  {{- if $cronjobsConfig.enabled }}
+
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Values.app.name }}
+  annotations:
+    kubernetes.io/change-cause: {{ .Values.stable.image.tag }}
+  labels:
+    {{- include "ApplicationLabel-stable" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjobs.ryzeRefundProcessor.schedule | quote }}
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1    
+  jobTemplate:
+    spec:
+      backoffLimit: 2  # Retry 2 times on failure
+      suspent: false
+      template:
+        metadata:
+          labels:
+            {{- include "ApplicationLabel-stable" . | nindent 12 }}
+        spec:
+          imagePullSecrets: 
+            {{- range .Values.imagePullSecrets }}
+            - name: {{ . }}
+            {{- end }}
+          containers:
+            - name: {{ .Values.app.name }}
+              image: {{ .Values.stable.image.repository }}:{{ .Values.stable.image.tag }}
+              imagePullPolicy: {{ .Values.stable.image.pullPolicy }}
+              # ports:
+              #   - containerPort: {{ .Values.container.port }}
+              envFrom:
+                - configMapRef:
+                    name: {{ .Values.app.name }}-configmap
+                - secretRef:
+                    name: {{ .Values.app.name }}-secrets
+              resources:
+                limits:
+                  cpu: {{ .Values.limits.cpu }}
+                  memory: {{ .Values.limits.memory }}
+                requests:
+                  cpu: {{ .Values.requests.cpu }}
+                  memory: {{ .Values.requests.memory }}
+          restartPolicy: OnFailure  # Ensure that the pod doesn't restart automatically
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+
+
+
+    {{- end }}  
+  {{- end }}    
+{{- end }}  
+
+{{- end }}  
